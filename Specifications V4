@@ -106,3 +106,135 @@ Document Version: 4.0
 Depends On: V1, V2, V3  
 Author: Adagio, REVO Corporation / Rezona Ambassador  
 License: MIT
+
+Technical Specification: Spaceware – Proxima Descent (Version 4.5)
+Active Controls, Inventory & Crafting System – Cinematic Cleanup + Input Integration
+
+• 1. Cinematic Black Bars Cleanup (Critical Fix)
+
+When gamePhase changes from "LANDING_CUTSCENE" to "SURFACE_EXPLORATION":
+- Top black bar fades out (opacity 1 → 0) over 0.3 seconds, then removed from DOM.
+- Bottom black bar fades out (opacity 1 → 0) over 0.3 seconds, then removed from DOM.
+- After fade out, astronaut is fully visible with no overlay bars.
+
+No letterbox remains visible during V4 gameplay.
+
+• 2. Joystick & Buttons Visibility
+
+When gamePhase == "SURFACE_EXPLORATION":
+- Joystick appears at bottom left (standard Rezona joystick).
+- Buttons S, J, A, I appear at bottom right (vertical or 2x2 grid).
+- Buttons visible BEFORE any action is triggered.
+- Buttons remain visible during entire surface exploration phase.
+
+UI layer for V4 controls is independent from cinematic layer.
+
+• 3. Button S – Scan
+
+Function: Detects buried resources within a short radius.
+When activated, temporary icons for Scrap, Food, or Artifacts appear at random locations near the astronaut.
+Cooldown: 15 seconds. Cannot scan while cooldown is active.
+
+Implementation:
+-----------------------------
+| if (scanCooldown <= 0) {  |
+| revealResources();        |
+| scanCooldown = 15;        |
+| }                         |
+-----------------------------
+
+• 4. Button J – Jump
+
+Function: Allows the astronaut to clear small terrain depressions or reach mid-height resources.
+Without jump, movement is limited to flat lateral sliding.
+Cooldown: 2 seconds (prevents spam, not a power-up).
+Jump is a brief Y-axis displacement. Camera does not change.
+
+• 5. Button A – Attack
+
+Function: Fires a plasma projectile (simple SVG) that destroys small obstacles or enemies (when implemented).
+Cooldown: 3 seconds. Unlimited ammunition.
+Projectile behavior: Instant damage at impact point. Moves horizontally in a straight line from astronaut's position.
+
+• 6. Button I – Inventory
+
+Function: Opens a modal window (no game reload) showing two panels:
+
+• 6.1 Available Materials
+- Scrap
+- Food
+- Artifacts
+- Current quantities displayed
+
+• 6.2 Recipes
+List of upgrades the player can craft with required materials.
+
+Example Recipes (expandable):
+
+| Upgrade | Cost | Benefit |
+|---------|------|---------|
+| Enhanced Engine | 20 Scrap + 5 Artifacts | +10% movement speed |
+| Hydroponic Farm | 15 Scrap + 10 Food | Generates 1 Food every 30 seconds (passive) |
+| Energy Shield | 30 Scrap + 15 Artifacts | Absorbs 1 hit |
+
+• 7. Button Responsiveness (No Delay)
+
+Each button executes its function immediately when pressed:
+- S (Scan): Reveal resources. Cooldown: 15s.
+- J (Jump): Y-axis displacement. Cooldown: 2s.
+- A (Attack): Fire projectile. Cooldown: 3s.
+- I (Inventory): Open modal.
+
+No "first press does nothing" bugs. No delays beyond cooldowns.
+
+• 8. Joystick Integration
+
+Joystick controls lateral movement (left/right) of the astronaut.
+- Joystick input read continuously (not just on press).
+- Movement speed: base 100 pixels per second.
+- Joystick and buttons do NOT conflict. Pressing a button does not interrupt joystick movement.
+
+• 9. Error Handling
+
+If any V4 component fails to load (buttons missing, joystick invisible, black bars stuck):
+- Log error to console.
+- Attempt to reinitialize UI after 1 second.
+
+Graceful degradation:
+- If joystick fails, buttons still work.
+- If buttons fail, joystick still works.
+- Do not crash.
+
+• 10. Integration with Previous Versions
+
+| Version | Phase | Status |
+|---------|-------|--------|
+| V1 | Descent (40,000 → 0 altitude) | Preserved |
+| V2 | Landing cutscene | Preserved |
+| V3 | Surface exploration + resource spawn | Preserved |
+| V4.5 | Cinematic cleanup + input integration | Added |
+
+- Resources (Scrap, Food, Artifacts) already exist from passive V3 spawning.
+- Scan adds active discovery.
+- Counters update in both inventory and main HUD.
+- When a recipe is crafted:
+  - Materials are deducted
+  - Effect is applied (speed boost, passive Food generation, shield, etc.)
+
+• 11. Deliverable
+
+A functional Rezona game that includes ALL previous versions (V1, V2, V3) plus:
+
+- Black bars removed after landing cutscene.
+- Joystick + four buttons (S, J, A, I) visible and responsive.
+- Scan: cooldown 15s, reveals nearby resources.
+- Jump: cooldown 2s, brief Y-axis displacement.
+- Attack: cooldown 3s, horizontal plasma projectile.
+- Inventory modal with material counters and craftable recipes.
+- Crafting system that deducts materials and applies permanent upgrades.
+- Error handling for missing UI components.
+
+Document Version: 4.5  
+Depends On: V1, V2, V3  
+Author: Adagio, REVO Corporation / Rezona Ambassador  
+License: MIT
