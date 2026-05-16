@@ -107,7 +107,7 @@ Depends On: V1, V2, V3
 Author: Adagio, REVO Corporation / Rezona Ambassador  
 License: MIT
 
-Technical Specification: Spaceware – Proxima Descent (Version 4.5)
+Technical Specification: Spaceware – Proxima Descent (Version 4.1)
 Active Controls, Inventory & Crafting System – Cinematic Cleanup + Input Integration
 
 • 1. Cinematic Black Bars Cleanup (Critical Fix)
@@ -236,5 +236,148 @@ A functional Rezona game that includes ALL previous versions (V1, V2, V3) plus:
 
 Document Version: 4.5  
 Depends On: V1, V2, V3  
+Author: Adagio, REVO Corporation / Rezona Ambassador  
+License: MIT
+
+Technical Specification: Spaceware – Proxima Descent (Version 4.2)
+Inventory & Crafting System – Active Resource Management
+
+• 1. Prerequisites
+
+V4.1 must be fully functional before implementing V4.2:
+- Joystick visible and responsive in both spaceship and astronaut modes.
+- Game phase switches correctly between DESCENT, LANDING_CUTSCENE, and SURFACE_EXPLORATION.
+- Buttons S, J, A, I visible and responsive in SURFACE_EXPLORATION mode.
+
+• 2. Button S – Scan (Active Resource Discovery)
+
+Function: Detects buried resources within a short radius of the astronaut.
+
+When activated:
+- Temporary icons for Scrap, Food, or Artifacts appear at random locations near the astronaut.
+- Icons remain visible for 5 seconds, then fade out if not collected.
+
+Cooldown: 15 seconds. Cannot scan while cooldown is active.
+Scan does not consume any resources.
+
+Implementation:
+-----------------------------
+| if (scanCooldown <= 0) {  |
+| revealResources(radius=100);|
+| scanCooldown = 15;        |
+| }                         |
+-----------------------------
+
+• 3. Button J – Jump (Mobility)
+
+Function: Allows the astronaut to clear small terrain depressions or reach elevated resources.
+
+Effect: Brief Y-axis displacement (upward then downward). Total duration 0.5 seconds.
+Cooldown: 2 seconds (prevents spam, not a power-up).
+Camera does not change during jump.
+
+Without jump, movement is limited to flat lateral sliding (joystick only).
+
+• 4. Button A – Attack (Defense)
+
+Function: Fires a plasma projectile (simple SVG) that destroys small obstacles or enemies (when implemented).
+
+Projectile behavior:
+- Moves horizontally in a straight line from astronaut's position.
+- Instant damage at impact point.
+- Destroys on collision with any obstacle or enemy.
+- If no collision, projectile disappears after traveling 500 pixels.
+
+Cooldown: 3 seconds. Unlimited ammunition.
+
+• 5. Button I – Inventory (Resource Management)
+
+Function: Opens a modal window (no game reload, no screen freeze) showing two panels:
+
+• 5.1 Available Materials
+- Scrap: [current count]
+- Food: [current count]
+- Artifacts: [current count]
+- All counts update in real time as resources are collected.
+
+• 5.2 Crafting Recipes
+
+List of upgrades the player can craft if they have the required materials.
+
+Example Recipes (expandable):
+
+| Upgrade | Cost | Benefit |
+|---------|------|---------|
+| Enhanced Engine | 20 Scrap + 5 Artifacts | +10% movement speed (permanent) |
+| Hydroponic Farm | 15 Scrap + 10 Food | Generates 1 Food every 30 seconds (passive) |
+| Energy Shield | 30 Scrap + 15 Artifacts | Absorbs 1 hit (permanent, one-time shield) |
+| Scanner Booster | 25 Scrap + 8 Artifacts | Reduces Scan cooldown from 15s to 10s |
+| Jump Pack | 12 Scrap + 6 Food | Double jump height (permanent) |
+
+• 5.3 Crafting Rules
+
+- If the player has enough materials, the "Craft" button is enabled.
+- When crafted:
+  - Materials are deducted from inventory.
+  - Upgrade effect is applied immediately.
+  - Recipe remains visible but becomes uncraftable if materials are insufficient.
+- Upgrades are permanent for the current session. No reset on game over.
+
+Implementation:
+-----------------------------
+| if (scrapCount >= costScrap && artifactsCount >= costArtifacts) { |
+|   scrapCount -= costScrap;                                       |
+|   artifactsCount -= costArtifacts;                               |
+|   applyUpgradeEffect(upgradeId);                                 |
+| }                                                               |
+-----------------------------
+
+• 6. Inventory Modal Behavior
+
+- Opens with button I, closes with X button or by tapping outside the modal.
+- Game does not pause while modal is open (resources continue to spawn, oxygen depletes if implemented).
+- Player can close modal, collect more resources, and reopen to craft additional upgrades.
+- Modal state (scroll position, selected recipe) does not need to persist after closing.
+
+• 7. Resource Integration
+
+- Resources (Scrap, Food, Artifacts) already spawn passively from V3.
+- Scan adds active discovery (more resources, higher density).
+- All resource counts are shared between main HUD and inventory modal.
+- Collecting a resource updates both displays in real time.
+
+• 8. Crafting Effects (Permanent)
+
+| Effect | Implementation |
+|--------|----------------|
+| Movement speed | Multiply joystick speed by 1.1 |
+| Passive Food generation | Add 1 Food every 30 seconds via timer |
+| Energy Shield | Set shielded=true; first hit does no damage, then shield breaks |
+| Scanner Booster | Reduce scanCooldown max from 15 to 10 |
+| Double jump | Add second jump while airborne (cooldown resets on ground) |
+
+• 9. Integration with Game Phases
+
+| Version | Phase | Features |
+|---------|-------|----------|
+| V1 | Descent | Joystick only |
+| V2 | Landing cutscene | No controls (cinematic) |
+| V3 | Surface exploration | Passive resource spawn |
+| V4.1 | Surface exploration | Joystick + buttons S/J/A/I visible and responsive |
+| V4.2 | Surface exploration | V4.1 + Scan, Jump, Attack, Inventory, Crafting (this version) |
+
+• 10. Deliverable
+
+A functional Rezona game that includes ALL previous versions (V1, V2, V3, V4.1) plus:
+
+- Scan (S): reveals resources within radius, cooldown 15s.
+- Jump (J): brief Y-axis displacement, cooldown 2s.
+- Attack (A): plasma projectile, cooldown 3s.
+- Inventory (I): modal with material counters and craftable recipes.
+- Crafting system that deducts materials and applies permanent upgrades (movement speed, passive food, shield, scanner boost, double jump).
+- Resource counts shared between HUD and inventory in real time.
+
+Document Version: 4.2  
+Depends On: V1, V2, V3, V4.1  
 Author: Adagio, REVO Corporation / Rezona Ambassador  
 License: MIT
