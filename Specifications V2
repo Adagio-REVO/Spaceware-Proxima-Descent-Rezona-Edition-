@@ -1,0 +1,95 @@
+Technical Specification V2: Spaceware – Proxima Descent (Phase Completion Module)
+
+1. Current Context
+
+The game already has a functional loop: the Janax-M1 spacecraft starts at 40,000 altitude and must descend to 0 while dodging SVG-generated asteroids. The player controls descent with lateral movement and/or braking. The core mechanic is an inverse infinite runner: instead of running forward, you fall downward.
+
+2. What Must Be Built
+
+After reaching altitude 0, the game must not end. It must transition to a second phase with an animated cutscene and a new game state.
+
+2.1 Trigger Condition
+
+· When altitude = 0 (surface collision achieved successfully, not by hitting an obstacle).
+· The altitude counter stops decrementing.
+· Asteroid generation and ship movement are paused.
+
+2.2 Transition Screen (Immediate)
+
+Display a centered message:
+
+```
+MISSION PHASE 1 COMPLETED
+JANAX-M1 LANDED ON PROXIMA B
+```
+
+Below it, an interactive button: CONTINUE TO PHASE 2
+
+The player must click or tap the button to proceed. No timeout. The game does not advance until user interaction.
+
+2.3 Animated Cutscene (Pure SVG, No External Video)
+
+When "CONTINUE TO PHASE 2" is pressed:
+
+1. Message and button disappear (quick fade out, 0.2s).
+2. Camera zooms in slightly on the ship (1.1x zoom over 1 second).
+3. SVG landing animation:
+   · The Janax-M1 ship moves slowly downward (final descent).
+   · The ground (a horizontal line with crater texture, generated in SVG) appears and stabilizes.
+   · Dust particles (small white circles) burst from the ship's base.
+   · The ship tilts slightly (rotation -2° to +2°) then levels out.
+4. Background text: "Proxima Centauri B – Surface" fades in at the bottom (0% → 100% over 1s).
+5. Total cutscene duration: 3–4 seconds.
+
+2.4 After the Cutscene Ends
+
+· The ship remains static in the center of the screen.
+· The background changes from black to a simple SVG surface landscape (rocky ground, dim sky with a distant star).
+· A new HUD appears: Phase 2 (oxygen bar, resource counter, etc.).
+· The game transitions into collection and construction mode (Spaceware tycoon, already exists).
+
+2.5 Technical Requirements for Rezona
+
+· The cutscene must be 100% code-generated SVG. No external videos or GIFs.
+· No external JavaScript libraries. Everything must run inside Rezona's engine (inline TypeScript/JS is allowed).
+· Animation must be smooth (60 fps).
+· The "Continue" button must work on touch (mobile) and click (desktop).
+· Game state must persist: ship position, asteroids, altitude. Nothing resets.
+
+3. Integration with Existing Game
+
+Current Component Required Extension
+Descent loop (40k → 0) Already exists. Stops at altitude = 0.
+Asteroid generation Freezes at altitude = 0. No new asteroids spawn.
+Ship controls Disabled during cutscene. Reactivated in Phase 2.
+Altitude variable Hidden after Phase 1.
+Game phase variable Changes from "DESCENT" to "LANDING_CUTSCENE" to "SURVIVAL".
+
+4. Example User Flow
+
+1. You play the normal descent. Dodge asteroids. Reach 0.
+2. "MISSION PHASE 1 COMPLETED" appears, along with the "CONTINUE TO PHASE 2" button.
+3. You press the button.
+4. The ship lands in an SVG animation. Dust. Tilts. Stabilizes.
+5. The game changes: now you collect resources, build upgrades, manage oxygen.
+6. End of specification.
+
+5. Expected Deliverable
+
+· Modified game code (only the transition and cutscene part).
+· Key documented functions: onAltitudeZero(), showPhaseCompleteScreen(), playLandingAnimation(), switchToPhaseTwo().
+· The cutscene must be reproducible in Rezona with no external dependencies.
+
+6. Public Repository Purpose
+
+This specification is part of a public archive of Rezona game specs. Anyone can:
+
+· Copy the prompt and paste it into Rezona's AI.
+· Use an AI scraper to extract the specification and adapt it to their own game.
+· Learn how to write professional game specifications instead of lazy prompts.
+
+The goal is not to give away finished games. The goal is to teach the method of specification-driven development inside Rezona.
+
+License: Free to use, remix, and adapt. Credit not required but appreciated.
+
+Author: Adagio, REVO Corporation / Rezona Ambassador
