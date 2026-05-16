@@ -1,0 +1,193 @@
+Technical Specification Document: Spaceware – Proxima Descent (Rezona Memeplays Edition)
+
+Version 1 – Core Experience
+
+1. Introduction
+
+This document defines the technical specifications and strategic constraints for adapting the web game "Spaceware: Proxima Descent" to the Rezona (Memeplays) platform.
+
+Primary Objective: Port the core descent-and-survival loop while amplifying the horror theme within Rezona's casual, meme-oriented ecosystem.
+
+Secondary Objective: Establish a reusable specification pattern for horror-educational games inside Rezona, aligning with professional documentation standards (Microsoft, NVIDIA).
+
+Target Platform: Rezona AI Game Generator (web + mobile)
+
+Target Audience: Casual gamers, meme enthusiasts, space horror fans (14–25)
+
+2. Rezona Platform Analysis (Constrained)
+
+Rezona is not a traditional game engine. It is an AI-powered generator optimized for:
+
+· Memeplays: Short (15–90 seconds), replayable, remixable mini-games
+· Zero-code creation: Users describe the game in natural language; AI generates logic + assets
+· Viral loops: Built-in sharing, remixing, emoji reactions, comments
+· Real-time multiplayer (recent addition) – can be used for shared horror experiences
+
+Known Constraints (based on public documentation and community testing):
+
+Area Constraint
+Assets No custom uploads (images, models, sounds). Everything is AI-generated on the fly.
+Graphics No shaders, no post-processing, no particle systems. SVG/vector-based only.
+Physics No rigidbody, no collision detection beyond simple bounding boxes.
+Animation No frame-by-frame. SVG transforms (translate, rotate, scale) only.
+Audio Basic bleeps and sweeps. No ambient layers or dynamic mixing.
+Logic Procedural generation is limited. Most logic is event-driven (if-then).
+Performance 60 fps target, but heavy SVG scenes drop frames. Keep objects under 50.
+
+Opportunities (not limitations):
+
+· High remixability: Your game can be forked and modded by the community. Horror can spread.
+· Fast iteration: AI generates a playable version in seconds. Test → adjust → reprompt.
+· Social horror: Shared anxiety works well with Rezona's emoji/comment system.
+· Rezonasaur as a narrative element: The mascot can appear as a jumpscare or environmental detail.
+
+3. Porting Strategy: Horror Within Casual Constraints
+
+Instead of fighting the platform, we translate horror mechanics into what Rezona does best.
+
+Traditional Horror Element Rezona Adaptation
+High-fidelity gore / blood SVG wireframe damage (white lines turning red, cracks on ship)
+Dynamic lighting / shadows High contrast: black background, white/red elements only
+Complex AI enemy behavior Scripted patterns + random flicker of HUD elements
+Atmospheric sound Simple bleeps + silence (silence is scarier than bad audio)
+Jump scares Sudden appearance of Rezonasaur or a close asteroid
+Psychological tension Decreasing oxygen bar + unpredictable asteroid waves
+
+4. Core Game Loop (Version 1)
+
+The game is an inverse infinite runner with a horror-educational twist.
+
+Setup:
+
+· Player controls the Janax-M1 spacecraft.
+· Starting altitude: 40,000
+· Goal: Reach altitude 0 (land on Proxima Centauri B)
+· Obstacles: Asteroids generated as SVG polygons
+
+Controls:
+
+· Left / Right (or tap left/right on mobile) → move ship horizontally
+· No braking (descent speed is constant)
+
+Mechanics:
+
+· Each asteroid collision reduces altitude by 500 (penalty) AND reduces integrity bar (visual feedback)
+· Integrity bar: starts at 100%. At 0%, the ship explodes → game over
+· No lives. One mistake chain can kill you.
+· Oxygen bar (decreases over time, not shown in V1 but reserved for V2)
+
+Victory Condition:
+
+· Altitude reaches 0 → Phase 1 completed
+· Landing cutscene (SVG animation of ship touching down)
+
+Defeat Condition:
+
+· Integrity reaches 0 → explosion animation + "MISSION FAILED" + restart button
+
+5. Horror Amplification Mechanics (V1)
+
+Within Rezona's constraints, we add three lightweight horror elements:
+
+5.1 HUD Flicker
+
+· When integrity drops below 30%, the HUD (altitude, integrity bars) flickers randomly (opacity 50% ↔ 100% every 0.2–0.5s).
+· Creates anxiety. No code complexity.
+
+5.2 Unpredictable Asteroid Waves
+
+· Not random. Patterned but with occasional "bursts": 5 asteroids in 2 seconds.
+· The player cannot fully predict. Paranoia.
+
+5.3 The Rezonasaur Jumpscare (Rare)
+
+· 1% chance per asteroid wave.
+· Instead of an asteroid, the Rezonasaur face appears briefly (white wireframe outline) and disappears.
+· No damage. Just a "what was that?" moment.
+· Meme-friendly. Community will remix it.
+
+6. Asset Specification (AI-Generated)
+
+Do not upload anything. Describe.
+
+6.1 Ship (Janax-M1)
+
+· Style: Low-poly SVG, white wireframe on black background
+· Shape: Triangle with two side wings, no fill, stroke width 2
+· Size: 5% of screen width
+· Position: Bottom third, centered
+
+6.2 Asteroids
+
+· Style: Irregular polygons, white stroke, no fill
+· Size: Random between 2% and 6% of screen width
+· Behavior: Move from top to bottom, horizontal drift ±20% of width per asteroid
+
+6.3 Background
+
+· Style: Black void, no stars (stars added in V2)
+· Purpose: High contrast for white/red elements. Silence as horror.
+
+6.4 Integrity Bar
+
+· Style: White outline bar, red fill
+· Position: Top right
+· Width: 30% of screen
+
+6.5 Altitude Counter
+
+· Font: Monospace, white, large
+· Position: Top center
+· Format: "ALT: 40,000"
+
+7. Horror Pacing Guide (For AI Prompts)
+
+Altitude Range Feeling Mechanics
+40,000 – 30,000 Calm, tutorial Slow asteroids, no flicker. Player learns controls.
+29,999 – 15,000 Tension building Moderate asteroid speed, occasional bursts. Oxygen not shown yet.
+14,999 – 5,000 Anxiety HUD flicker at integrity <30%. Waves become unpredictable.
+4,999 – 1 Panic Rezonasaur jumpscare possible. Asteroids fast. Player fights to survive.
+0 Relief / Horror of the unknown Landing cutscene. Silence. Player knows something is waiting.
+
+8. Integration with Future Versions (V2, V3)
+
+V1 ends at landing. V2 will add:
+
+· Surface exploration (tycoon mechanics)
+· Oxygen management
+· Flashcards (educational)
+· Leviathan cosmic horror (rare events)
+
+V1 must not break when V2 code is added. Use a gamePhase variable:
+
+· "DESCENT" (V1)
+· "LANDING" (cutscene)
+· "SURVIVAL" (V2, not implemented yet, but reserved)
+
+9. Success Metrics for V1
+
+Metric Target
+Playable from start to landing 100% (no crashes)
+Average playtime 2–4 minutes (good for memeplay)
+Horror perception User test: "did you feel tension?" → >70% yes
+Replayability Player tries at least 3 times
+Remix rate At least 1 community remix within 2 weeks
+
+10. Deliverable
+
+A fully functional Rezona game (single HTML/JS block) that implements:
+
+· Descent from 40,000 to 0 with asteroid dodging
+· Integrity bar and altitude counter
+· HUD flicker at low integrity
+· Unpredictable asteroid waves
+· Rare Rezonasaur jumpscare
+· Victory landing cutscene (SVG animation)
+· Defeat explosion + restart
+
+All assets generated by AI from textual descriptions. No external files.
+
+Document Version: 1.0
+Target Platform: Rezona (Memeplays)
+Author: Adagio, REVO Corporation / Rezona Ambassador
+License: Free to remix and adapt for non-commercial use.
