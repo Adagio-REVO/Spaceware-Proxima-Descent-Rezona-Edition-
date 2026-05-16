@@ -1,0 +1,199 @@
+Technical Specification: Spaceware – Proxima Descent (Version 3)
+
+Surface Exploration Transition & Resource Gathering
+
+1. Objective
+
+Transform the landing cutscene into a seamless cinematic transition that changes the game genre from "descent survival" to "surface exploration tycoon".
+
+The player must feel they are watching a movie that suddenly becomes interactive again.
+
+
+2. Trigger Condition
+
+The transition starts when:
+
+· altitude == 0 (landing achieved)
+· The landing cutscene animation is complete (ship on ground, dust settled)
+
+No user input required. The transition is automatic.
+
+3. Cinematic Letterbox Effect
+
+When the transition begins:
+
+· Black bars slide in from top and bottom.
+· Bar height: 15% of screen height each.
+· Animation duration: 0.5 seconds, smooth slide (ease-in-out).
+· Bars remain visible during the entire surface exploration phase (they never disappear).
+
+Purpose: Signal to the player that the game has entered a "cinematic mode". The astronaut is now the protagonist of a survival film.
+
+4. Ship-to-Astronaut Transformation
+
+4.1 Ship Fade Out
+
+· The Janax-M1 spacecraft fades out over 1 second (opacity 1 → 0).
+· No explosion. No debris. Just a smooth disappearance.
+
+4.2 Astronaut Instantiation
+
+· At the exact moment the ship reaches opacity 0, an astronaut SVG appears at the same position.
+· Initial opacity: 0.
+
+4.3 Astronaut Fade In
+
+· Astronaut fades in over 0.5 seconds (opacity 0 → 1).
+
+4.4 Astronaut Specifications
+
+Attribute Value
+Style White wireframe SVG, no fill, stroke width 2
+Shape Helmet, torso, backpack, two arms, two legs (simplified geometric)
+Size Same as the ship (approx 5% of screen width)
+Position Ground level (bottom third of screen)
+Animation Idle: slight breathing (scale 1.0 → 1.02 → 1.0, cycle 2s)
+
+5. HUD Transformation
+
+The HUD must change completely. No remnants of the descent phase.
+
+5.1 Remove Descent HUD
+
+· Altitude counter: hidden (no longer relevant)
+· Integrity bar: hidden (ship is gone)
+
+5.2 Add Surface Exploration HUD
+
+Resource counters (top left):
+
+Resource Icon (SVG) Initial Value
+Scrap Gear icon 0
+Food Apple/leaf icon 0
+Artifacts Diamond / alien relic icon 0
+
+Additional HUD elements (top right):
+
+· Oxygen bar (reserved for future versions, but placeholder shown as 100%)
+· Time on surface (optional, not required for V3)
+
+
+6. Resource Spawning System
+
+Once gamePhase = "SURFACE_EXPLORATION" is set:
+
+6.1 Spawn Rules
+
+· Resources spawn randomly on the ground level (same Y coordinate as the astronaut).
+· Spawn rate: 1 resource every 3–5 seconds.
+· Maximum resources on screen at once: 5 (to prevent clutter).
+· Resources disappear if not collected within 15 seconds.
+
+6.2 Resource Types & Behaviors
+
+Resource Color (SVG stroke) Collection Effect
+Scrap White +1 to Scrap counter
+Food Green +1 to Food counter
+Artifacts Cyan +1 to Artifacts counter, triggers a scientific fact (see 7.1)
+
+6.3 Collection Mechanism
+
+· The astronaut does not move left/right (yet). Collection is click/tap on the resource.
+· When clicked: resource disappears, counter increments, sound effect (bleep).
+
+7. Educational Component (Light)
+
+7.1 Artifact Discovery
+
+· Whenever the player collects an Artifact, a scientific fact appears at the bottom of the screen for 3 seconds.
+· Fact content: Random from a list of 10 pre-defined facts about Proxima Centauri B (temperature, atmosphere, potential habitability, etc.).
+· Fact box: White wireframe rectangle, black background, monospace font.
+
+7.2 Fact List (example)
+
+```
+"Proxima Centauri B orbits its star every 11.2 days."
+"Surface temperature: -39°C (cold, but potential liquid water under ice)."
+"The star Proxima Centauri is a red dwarf, much dimmer than our Sun."
+"Tidal locking means one side always faces the star."
+```
+
+8. Game State Management
+
+8.1 Phase Variable
+
+Add a global variable gamePhase with possible values:
+
+· "DESCENT" (V1)
+· "LANDING_CUTSCENE" (V2)
+· "SURFACE_EXPLORATION" (V3 – this version)
+
+8.2 Resource Variables
+
+```typescript
+let scrapCount = 0;
+let foodCount = 0;
+let artifactsCount = 0;
+```
+
+8.3 Spawn Timer
+
+Use setInterval or a game loop with delta time:
+
+```javascript
+let spawnTimer = 0;
+const SPAWN_INTERVAL = 4000; // milliseconds
+
+// In game loop:
+spawnTimer += deltaTime;
+if (spawnTimer >= SPAWN_INTERVAL && resourceCount < 5) {
+    spawnResource();
+    spawnTimer = 0;
+}
+```
+
+9. Visual Aesthetic (Surface Phase)
+
+Element Specification
+Background Black void (same as descent) – silence and emptiness amplifies isolation
+Ground A single white horizontal line at bottom third (Y = 0.7 * screen height)
+Stars Optional: a few static white dots (no animation)
+Resources Simple wireframe icons, no fill, white/colored stroke
+Letterbox bars Black, 15% top + 15% bottom, static after slide-in
+
+10. Integration with V1 and V2
+
+Version Phase What happens
+V1 Descent 40,000 → 0 altitude, avoid asteroids
+V2 Landing cutscene Ship lands, dust, tilt, text
+V3 Surface exploration Astronaut appears, collect resources, discover facts
+
+The transition must be seamless. No loading screens. No abrupt cuts. The letterbox slide and ship fade happen simultaneously, creating a single fluid motion.
+
+11. Deliverable
+
+A functional Rezona game that:
+
+1. Completes the descent phase (V1)
+2. Plays the landing cutscene (V2)
+3. Automatically transitions to surface exploration with:
+   · Letterbox black bars (slide-in)
+   · Ship fade out + astronaut fade in
+   · Resource counters (Scrap, Food, Artifacts)
+   · Random resource spawning on ground
+   · Click/tap collection
+   · Artifact facts (educational)
+4. No user input required for the transition (after landing cutscene ends)
+
+12. Success Metrics for V3
+
+Metric Target
+Transition smoothness No visible glitches, no frame drops
+Resource spawn & collection Works 100% of the time
+Educational facts Player sees at least 1 fact per 3 artifacts
+Player understanding No instructions needed; player discovers collection by clicking
+
+Document Version: 3.0
+Depends On: V1 and V2 implementations
+Author: Adagio, REVO Corporation / Rezona Ambassador
+License: Free to remix and adapt for non-commercial use
