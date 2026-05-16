@@ -1,0 +1,163 @@
+Framework for Optimized Prompts in Rezona (or Any AI Game Generator)
+
+A Method for Developers Who Want Games That Work
+
+---
+
+1. The Problem
+
+Most users type short, vague prompts and get broken, forgettable games. The AI is not the issue. The input is. This framework replaces guessing with specification.
+
+---
+
+2. The Five-Phase Specification Method
+
+Do not write a single paragraph. Write five short documents, one per phase. Then combine them into one prompt.
+
+Phase 0: Platform Analysis (Optional but Recommended)
+
+Before writing, understand the platform's constraints and opportunities.
+
+Ask yourself:
+
+· What kind of games does this platform excel at? (e.g., memeplays, casual, short loops)
+· What are its technical limits? (e.g., no custom shaders, no physics engine, SVG only)
+· What does its audience expect? (e.g., humor, remixability, social features)
+
+Output: A few sentences acknowledging the platform's strengths and limitations. This prevents you from designing a game that the AI cannot build.
+
+Phase 1: Domain Definition
+
+Define the game's core identity in one paragraph.
+
+Template:
+
+· Genre + subgenre + tone
+· Target audience (age, skill level, interests)
+· Estimated playtime
+· The core loop in one sentence (player does X → AI responds Y → player decides Z)
+
+Example:
+
+```
+DOMAIN: Survival horror educational. Proxima Centauri B. You are an astronaut collecting resources, building upgrades, and answering science questions to repair your ship.
+AUDIENCE: Teens interested in sci-fi and astronomy.
+PLAYTIME: 3–5 minutes per attempt.
+CORE LOOP: Explore → collect resources → build upgrades → answer flashcards to validate progress.
+```
+
+Phase 2: Mechanics Specification
+
+Define rules, controls, victory/defeat conditions, and difficulty scaling.
+
+Template:
+
+```
+CONTROLS:
+- [input type] → [action]
+
+RULES:
+- [rule 1]
+- [rule 2]
+
+VICTORY: [condition]
+DEFEAT: [condition]
+
+PROGRESSION:
+- [how difficulty or complexity increases]
+```
+
+Phase 3: Aesthetic Specification
+
+Describe the visual style in concrete terms. Do not say "make it scary". Say:
+
+```
+STYLE: Doom 64, pixelated, grainy textures, wireframes on black.
+COLORS: Black background, burnt red for hazards, white for UI.
+SCALE: Player character occupies ~8% of screen width.
+ANIMATIONS: Flicker on low integrity, fade on resource collection.
+UI: Monospace font, white stroke, no fill.
+```
+
+Phase 4: Content Specification
+
+Define what the player learns, reads, or discovers. If your game has questions, facts, or data:
+
+```
+SOURCE: [e.g., NASA Exoplanet Archive, ESO articles]
+FORMAT: [e.g., multiple choice, text fact, data point]
+DIFFICULTY SCALING: [e.g., first 5 questions basic, then harder every 3 correct answers]
+```
+
+Phase 5: Experience Specification
+
+Translate emotion into mechanics. Do not say "make it tense". Say:
+
+```
+PLAYER STATES:
+- Before start: [what they expect]
+- During calm: [what they feel and do]
+- During tension: [what changes in the game]
+- After victory/defeat: [what they feel]
+
+KEY MOMENTS:
+- Hook (first 5 seconds): [what must happen]
+- Climax: [when tension peaks]
+- Resolution: [how the game ends]
+```
+
+---
+
+3. The Integrated Prompt
+
+After writing the five phases, combine them into one prompt. Do not write a wall of text. Use bullet points, tables, and clear separators.
+
+Example structure (copy-paste this template and fill in your specs):
+
+```
+Create a Rezona game with the following specifications:
+
+DOMAIN: [your Phase 1 output]
+
+CONTROLS: [your Phase 2 output]
+
+RULES: [your Phase 2 output]
+
+VICTORY/DEFEAT: [your Phase 2 output]
+
+VISUAL STYLE: [your Phase 3 output]
+
+CONTENT: [your Phase 4 output]
+
+EXPERIENCE: [your Phase 5 output]
+
+Generate the full game.
+```
+
+---
+
+4. Iteration Protocol
+
+· First attempt: use the integrated prompt. If the game works, commit it as version X.
+· If it fails, do not rewrite the entire spec. Identify what is missing or broken. Then:
+  · Write a short follow-up prompt: "Fix the following: [specific issue]"
+  · Or create a new version of the spec (e.g., V4.1 → V4.2) adding only the missing details.
+· After each fix, run the game and observe. Do not guess. Execute, test, adjust, repeat.
+
+---
+
+5. When to Stop Iterating
+
+· The game is fully functional and meets your design goals → stop, document, commit.
+· The AI repeatedly fails on the same issue after 3–5 attempts → the platform may have reached its complexity ceiling. Either simplify the design or switch to a more powerful engine (Unity, Godot, or an AI agentic environment like Replit with preview).
+· Document failed attempts. They are as valuable as successes. They define the platform's limits.
+
+6. Final Advice
+
+The AI is a mirror. It gives you back what you give it. Short prompts produce shallow games. Detailed specifications produce robust games. The framework above works for any AI game generator, not just Rezona. Adapt it to your platform, your genre, your complexity level. The method scales. Your skills scale with it.
+
+Now go specify something.
+
+Document Version: 1.0
+Author: Adagio, REVO Corporation / Rezona Ambassador
+License: MIT
