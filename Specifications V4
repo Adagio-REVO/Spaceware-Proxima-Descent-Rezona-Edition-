@@ -1,0 +1,108 @@
+Technical Specification: Spaceware – Proxima Descent (Version 4)
+Active Controls, Inventory & Crafting System
+
+• 1. Control Activation
+
+Controls appear ONLY after the astronaut has exited the ship (post V3 transition). No joystick. No arrow buttons. Four discrete commands: S, J, A, I.
+
+Each executes a mathematical function with clear rules.
+
+• 2. Button S – Scan
+
+Function: Detects buried resources within a short radius.
+
+When activated, temporary icons for Scrap, Food, or Artifacts appear at random locations near the astronaut.
+
+Cooldown: 15 seconds. Cannot scan while cooldown is active.
+
+Implementation:
+
+Code example for AI and human on the loop:
+-----------------------------
+| if (scanCooldown <= 0) {  |
+• revealResources();        •
+| scanCooldown = 15;        |
+• }                         •
+-----------------------------
+
+• 3. Button J – Jump
+
+Function: Allows the astronaut to clear small terrain depressions or reach mid-height resources.
+
+Without jump, movement is limited to flat lateral sliding.
+
+Cooldown: 2 seconds (prevents spam, not a power-up).
+
+Jump is a brief Y-axis displacement. Camera does not change.
+
+• 4. Button A – Attack
+
+**Function:** Fires a plasma projectile (simple SVG) that destroys small obstacles or enemies (when implemented).
+
+Cooldown: 3 seconds. Unlimited ammunition.
+
+Projectile behavior: Instant damage at impact point. Moves horizontally in a straight line from astronaut's position.
+
+• 5. Button I – Inventory
+
+Function: Opens a modal window (no game reload) showing two panels:
+
+• 5.1 Available Materials
+- Scrap
+- Food
+- Artifacts
+- Current quantities displayed
+
+• 5.2 Recipes
+List of upgrades the player can craft if they have the required materials. Each recipe includes a cost and a clear benefit.
+
+Example Recipes (expandable):
+
+| Upgrade | Cost | Benefit |
+|---------|------|---------|
+| Enhanced Engine | 20 Scrap + 5 Artifacts | +10% movement speed |
+| Hydroponic Farm | 15 Scrap + 10 Food | Generates 1 Food every 30 seconds (passive) |
+| Energy Shield | 30 Scrap + 15 Artifacts | Absorbs 1 hit |
+
+• 6. Input Restrictions
+
+- Buttons are NOT customizable. Fixed as S, J, A, I.
+- Always visible on UI after V3 phase begins.
+- Player can press in any order, respecting cooldowns.
+- Ship is no longer visible on surface. Astronaut is the main entity.
+- Lateral movement (left/right touch or keyboard) remains active.
+- Buttons S, J, A, I are supplements, not replacements for movement.
+
+• 7. Integration with Previous Versions
+
+| Version | Phase | Status |
+|---------|-------|--------|
+| V1 | Descent (40,000 → 0 altitude) | Preserved |
+| V2 | Landing cutscene | Preserved |
+| V3 | Surface exploration + resource spawn | Preserved |
+| V4 | Active controls + inventory + crafting | Added |
+
+- Resources (Scrap, Food, Artifacts) already exist from passive V3 spawning.
+- Scan adds active discovery.
+- Counters update in both inventory and main HUD.
+- When a recipe is crafted:
+  - Materials are deducted
+  - Effect is applied (speed boost, passive Food generation, shield, etc.)
+
+• 8. Deliverable
+
+A functional Rezona game that includes ALL previous versions (V1, V2, V3) plus:
+
+- Four active buttons (S, J, A, I) appearing only after astronaut exits ship
+- Scan: cooldown 15s, reveals nearby resources
+- Jump: cooldown 2s, brief Y-axis displacement
+- Attack: cooldown 3s, horizontal plasma projectile
+- Inventory modal with:
+  - Material counters
+  - Craftable recipes with costs and benefits
+- Crafting system that deducts materials and applies permanent upgrades
+
+Document Version: 4.0  
+Depends On: V1, V2, V3  
+Author: Adagio, REVO Corporation / Rezona Ambassador  
+License: MIT
